@@ -37,15 +37,15 @@ contract FarmAssetNFT is
 
     function mintAsset(string memory tokenURI) public returns (uint256) {
         uint256 tokenId = tokenCounter;
-        _safeMint(tx.origin, tokenId);
+        _safeMint(msg.sender, tokenId);
         _setTokenURI(tokenId, tokenURI);
         tokenCounter++;
-        emit Minted(tokenId, tx.origin, tokenURI);
+        emit Minted(tokenId, msg.sender, tokenURI);
         return tokenId;
     }
 
     function listAsset(uint256 tokenId, uint256 price) public {
-        require(ownerOf(tokenId) == tx.origin, "Not the owner");
+        require(ownerOf(tokenId) == msg.sender, "Not the owner");
         assetInfo[tokenId] = AssetInfo(price, true);
         emit Listed(tokenId, price);
     }
@@ -56,12 +56,12 @@ contract FarmAssetNFT is
         require(msg.value == info.price, "Incorrect price");
 
         address seller = ownerOf(tokenId);
-        _transfer(seller, tx.origin, tokenId);
+        _transfer(seller, msg.sender, tokenId);
 
         payable(seller).transfer(msg.value);
         assetInfo[tokenId].forSale = false;
 
-        emit Purchased(tokenId, tx.origin);
+        emit Purchased(tokenId, msg.sender);
     }
 
     function getAssetDetails(

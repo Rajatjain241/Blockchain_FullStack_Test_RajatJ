@@ -16,9 +16,9 @@ This project includes three smart contracts:
 4. npx hardhat run scripts/deploy.js --network amoy
 
 ## Transaction Hashes
-✅ FarmToken deployed at: 0xffb98E5300c234d7Ba8039686C80052545513fE9
-✅ FarmAssetNFT (Proxy) deployed at: 0xe6708EF6F00fAC8e924401A837a152A960D3D178
-✅ FarmAssetStaking (Proxy) deployed at: 0x4DC4D4484e832Cf2Ec8C4178F69ad4fD7A036601
+1. ✅ FarmToken deployed at: 0x4C4B83f2Be000Cd51ac42aFdc1b988Ad83CFb1A7
+2. ✅ FarmAssetNFT (Proxy) deployed at: 0x23F1031E7481eEF97ec4a2CDcba74b81B96D695F
+3. ✅ FarmAssetStaking (Proxy) deployed at: 0x2f789dC4CA8404C3290F33886A08aA3F13Ad9e57
 
 4. ✅ List asset tx: 
 5. ✅ 

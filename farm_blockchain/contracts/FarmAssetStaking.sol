@@ -43,16 +43,16 @@ contract FarmAssetStaking is
 
     function stake(uint256 tokenId) public {
         require(!stakes[tokenId].staked, "Already staked");
-        require(farmAssetNFT.ownerOf(tokenId) == tx.origin, "Not owner");
-        farmAssetNFT.transferFrom(tx.origin, address(this), tokenId);
+        require(farmAssetNFT.ownerOf(tokenId) == msg.sender, "Not owner");
+        farmAssetNFT.transferFrom(msg.sender, address(this), tokenId);
 
-        stakes[tokenId] = StakeInfo(tx.origin, tokenId, block.timestamp, true);
-        emit Staked(tx.origin, tokenId);
+        stakes[tokenId] = StakeInfo(msg.sender, tokenId, block.timestamp, true);
+        emit Staked(msg.sender, tokenId);
     }
 
     function claimReward(uint256 tokenId) public {
         StakeInfo storage info = stakes[tokenId];
-        require(info.owner == tx.origin, "Not owner");
+        require(info.owner == msg.sender, "Not owner");
         require(info.staked, "Not staked");
 
         uint256 timeStaked = block.timestamp - info.startTime;
@@ -60,20 +60,20 @@ contract FarmAssetStaking is
 
         if (rewardAmount > 0) {
             info.startTime = block.timestamp;
-            farmToken.transfer(tx.origin, rewardAmount * 1e18);
-            emit RewardClaimed(tx.origin, rewardAmount);
+            farmToken.transfer(msg.sender, rewardAmount * 1e18);
+            emit RewardClaimed(msg.sender, rewardAmount);
         }
     }
 
     function unstake(uint256 tokenId) public {
         StakeInfo storage info = stakes[tokenId];
-        require(info.owner == tx.origin, "Not owner");
+        require(info.owner == msg.sender, "Not owner");
         require(info.staked, "Not staked");
 
         claimReward(tokenId);
 
         info.staked = false;
-        farmAssetNFT.transferFrom(address(this), tx.origin, tokenId);
-        emit Unstaked(tx.origin, tokenId);
+        farmAssetNFT.transferFrom(address(this), msg.sender, tokenId);
+        emit Unstaked(msg.sender, tokenId);
     }
 }
