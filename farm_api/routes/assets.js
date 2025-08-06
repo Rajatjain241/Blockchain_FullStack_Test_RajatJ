@@ -71,4 +71,24 @@ router.post("/:id/stake", async (req, res) => {
     }
 });
 
+// list asset
+router.post("/:id/list", async (req, res) => {
+    const assetId = req.params.id;
+
+    try {
+        const asset = await Asset.findById(assetId);
+        if (!asset) return res.status(404).json({ error: "Asset not found" });
+
+        const details = await nftContract.getAssetDetails(0);
+        console.log('details', details)
+        const listTx = await nftContract.listAsset(asset.token_id, 5000000);
+        const receipt = await listTx.wait();
+        if (receipt.status == 0) return res.status(404).json({ error: "Transaction failed" });
+
+        res.json({ message: "Asset listed", txHash: receipt.transactionHash });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;
