@@ -564,11 +564,6 @@
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "owner",
-                "type": "address"
-            },
-            {
                 "internalType": "uint256",
                 "name": "tokenId",
                 "type": "uint256"
@@ -586,11 +581,6 @@
     },
     {
         "inputs": [
-            {
-                "internalType": "address",
-                "name": "buyer",
-                "type": "address"
-            },
             {
                 "internalType": "string",
                 "name": "tokenURI",
@@ -668,11 +658,6 @@
     },
     {
         "inputs": [
-            {
-                "internalType": "address",
-                "name": "buyer",
-                "type": "address"
-            },
             {
                 "internalType": "uint256",
                 "name": "tokenId",
