@@ -70,7 +70,7 @@ contract FarmAssetStaking is
         require(info.owner == tx.origin, "Not owner");
         require(info.staked, "Not staked");
 
-        claimReward(tx.origin, tokenId);
+        claimReward(tokenId);
 
         info.staked = false;
         farmAssetNFT.transferFrom(address(this), tx.origin, tokenId);
