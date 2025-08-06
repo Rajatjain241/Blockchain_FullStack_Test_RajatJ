@@ -1,14 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const Asset = require("../models/Assets");
-const { stakingContract, nftContract, provider, walletAddress } = require("../web3");
+const { stakingContract, nftContract, provider } = require("../web3");
 
 // POST /assets — Create & Mint NFT
 router.post("/", async (req, res) => {
     const { name, type, status, owner_id, price, tokenURI } = req.body;
 
     try {
-        const tx = await nftContract.mintAsset(walletAddress, tokenURI);
+        const tx = await nftContract.mintAsset(tokenURI);
         const receipt = await tx.wait();
         const receiptLogs = await provider.getTransactionReceipt(receipt.hash);
         const tokenId = receiptLogs.logs[1].data;
@@ -58,7 +58,7 @@ router.post("/:id/stake", async (req, res) => {
 
         const approveTx = await nftContract.approve(await stakingContract.getAddress(), asset.token_id);
         await approveTx.wait();
-        const stakeTx = await stakingContract.stake(walletAddress, asset.token_id);
+        const stakeTx = await stakingContract.stake(asset.token_id);
         const receipt = await stakeTx.wait();
         if (receipt.status == 0) return res.status(404).json({ error: "Transaction failed" });
 
