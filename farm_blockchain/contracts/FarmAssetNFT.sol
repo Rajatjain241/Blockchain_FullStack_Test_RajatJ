@@ -35,36 +35,33 @@ contract FarmAssetNFT is
 
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
-    function mintAsset(
-        address buyer,
-        string memory tokenURI
-    ) public returns (uint256) {
+    function mintAsset(string memory tokenURI) public returns (uint256) {
         uint256 tokenId = tokenCounter;
-        _safeMint(buyer, tokenId);
+        _safeMint(tx.origin, tokenId);
         _setTokenURI(tokenId, tokenURI);
         tokenCounter++;
-        emit Minted(tokenId, buyer, tokenURI);
+        emit Minted(tokenId, tx.origin, tokenURI);
         return tokenId;
     }
 
-    function listAsset(address owner, uint256 tokenId, uint256 price) public {
-        require(ownerOf(tokenId) == owner, "Not the owner");
+    function listAsset(uint256 tokenId, uint256 price) public {
+        require(ownerOf(tokenId) == tx.origin, "Not the owner");
         assetInfo[tokenId] = AssetInfo(price, true);
         emit Listed(tokenId, price);
     }
 
-    function purchaseAsset(address buyer, uint256 tokenId) public payable {
+    function purchaseAsset(uint256 tokenId) public payable {
         AssetInfo memory info = assetInfo[tokenId];
         require(info.forSale, "Not for sale");
         require(msg.value == info.price, "Incorrect price");
 
         address seller = ownerOf(tokenId);
-        _transfer(seller, buyer, tokenId);
+        _transfer(seller, tx.origin, tokenId);
 
         payable(seller).transfer(msg.value);
         assetInfo[tokenId].forSale = false;
 
-        emit Purchased(tokenId, buyer);
+        emit Purchased(tokenId, tx.origin);
     }
 
     function getAssetDetails(

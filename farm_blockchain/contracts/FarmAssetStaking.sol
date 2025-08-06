@@ -41,18 +41,18 @@ contract FarmAssetStaking is
 
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
-    function stake(address staker, uint256 tokenId) public {
+    function stake(uint256 tokenId) public {
         require(!stakes[tokenId].staked, "Already staked");
-        require(farmAssetNFT.ownerOf(tokenId) == staker, "Not owner");
-        farmAssetNFT.transferFrom(staker, address(this), tokenId);
+        require(farmAssetNFT.ownerOf(tokenId) == tx.origin, "Not owner");
+        farmAssetNFT.transferFrom(tx.origin, address(this), tokenId);
 
-        stakes[tokenId] = StakeInfo(staker, tokenId, block.timestamp, true);
-        emit Staked(staker, tokenId);
+        stakes[tokenId] = StakeInfo(tx.origin, tokenId, block.timestamp, true);
+        emit Staked(tx.origin, tokenId);
     }
 
-    function claimReward(address rewardee, uint256 tokenId) public {
+    function claimReward(uint256 tokenId) public {
         StakeInfo storage info = stakes[tokenId];
-        require(info.owner == rewardee, "Not owner");
+        require(info.owner == tx.origin, "Not owner");
         require(info.staked, "Not staked");
 
         uint256 timeStaked = block.timestamp - info.startTime;
@@ -60,20 +60,20 @@ contract FarmAssetStaking is
 
         if (rewardAmount > 0) {
             info.startTime = block.timestamp;
-            farmToken.transfer(rewardee, rewardAmount * 1e18);
-            emit RewardClaimed(rewardee, rewardAmount);
+            farmToken.transfer(tx.origin, rewardAmount * 1e18);
+            emit RewardClaimed(tx.origin, rewardAmount);
         }
     }
 
-    function unstake(address owner, uint256 tokenId) public {
+    function unstake(uint256 tokenId) public {
         StakeInfo storage info = stakes[tokenId];
-        require(info.owner == owner, "Not owner");
+        require(info.owner == tx.origin, "Not owner");
         require(info.staked, "Not staked");
 
-        claimReward(owner, tokenId);
+        claimReward(tx.origin, tokenId);
 
         info.staked = false;
-        farmAssetNFT.transferFrom(address(this), owner, tokenId);
-        emit Unstaked(owner, tokenId);
+        farmAssetNFT.transferFrom(address(this), tx.origin, tokenId);
+        emit Unstaked(tx.origin, tokenId);
     }
 }
